@@ -78,17 +78,4 @@ void test_allocation(int size, std::string path){
     }
 }
 
-int main(){
-    int size;
-    std::string path;
-    std::string file_name;
-
-    std::cout << "What size array would you like to test for? ";
-    std::cin >> size;
-    std::cout << "What is the file path you would like to write to? ";
-    std::cin >> path;
-
-    test_allocation(size, path);
-}
-
 #endif
