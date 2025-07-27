@@ -52,16 +52,16 @@ AlgorithmData memoWrapper(std::vector<Item> items, int capacity) {
     return AlgorithmData{totalValue, durationMemo.count(), basicOps};
 }
 
-int main(){
-    std::vector<Item> items = {Item{1, 4}, Item{2, 5}, Item{3, 1}, Item{2, 4}, Item{1, 2}};
+// int main(){
+//     std::vector<Item> items = {Item{1, 4}, Item{2, 5}, Item{3, 1}, Item{2, 4}, Item{1, 2}};
 
-    AlgorithmData data = memoWrapper(items, 4);
+//     AlgorithmData data = memoWrapper(items, 4);
 
-    std::cout << "Total Value: " << std::to_string(data.totalValue) << std::endl;
-    std::cout << "Total Duration (microseconds): " << std::to_string(data.duration) << std::endl;
-    std::cout << "Total Basic Operations: " << std::to_string(data.basicOps) << std::endl;
+//     std::cout << "Total Value: " << std::to_string(data.totalValue) << std::endl;
+//     std::cout << "Total Duration (microseconds): " << std::to_string(data.duration) << std::endl;
+//     std::cout << "Total Basic Operations: " << std::to_string(data.basicOps) << std::endl;
     
-    return 0;
-}
+//     return 0;
+// }
 
 #endif
