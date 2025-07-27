@@ -18,7 +18,7 @@ bool compareItems(const Item a, const Item b) {
 	return a.Item::ratio() > b.Item::ratio();
 }
 
-AlgorithmData greedy_knapsack(std::vector<Item> items, int knapsackCapacity){
+AlgorithmData greedyKnapsack(std::vector<Item> items, int knapsackCapacity){
     auto start_time_greedy = std::chrono::high_resolution_clock::now();
     int totalWeight = 0;
     int totalValue = 0;
