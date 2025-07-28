@@ -23,7 +23,7 @@ namespace constants{
     const string INPUT_FILE_PATH = "inputFile.txt";   //Filepath for the input textfile
     const int TRIALS = 500; //Number of times to run the algorithm per input size
     const long long MAX_TIME = 5400000000000; //1.5 hours
-    const uint8_t NUM_INPUTS = 5; //Modify to suit needs. Can be 1 (n=4) to 15 (n=65536). Each increases max vector size reached in main loops.
+    const uint8_t NUM_INPUTS = 15; //Modify to suit needs. Can be 1 (n=4) to 15 (n=65536). Each increases max vector size reached in main loops.
     const string CSV_HEADER = ",Brute,Greedy,Dynamic Programming,Memo,FPTAS";
 }
 
@@ -83,7 +83,7 @@ int main(){
         weight = 125 * currSize;
 
         //Gen FPTAS input beforehand
-        fptasInput = generateFPTASInput(0.05, items, currSize, maxVal);
+        fptasInput = generateFPTASInput(0.05, items, fptasInput.size(), currSize, maxVal);
 
         //GREEDY
         greedy = std::async(runAlgorithm, tempItems, weight, constants::TRIALS, &greedyKnapsack);

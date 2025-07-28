@@ -93,7 +93,7 @@ int main(){
 
         //FPTAS APPROXIMATION
         if (i < 10){ //Past input size 2048, this algorithm can cause issues due to 16bit int limits
-            fptasInput = generateFPTASInput(0.05, items, currSize, maxVal);
+            fptasInput = generateFPTASInput(0.05, items, fptasInput.size(), currSize, maxVal);
             FPTASData = runAlgorithm(fptasInput, weight, constants::TRIALS, dpWrapper);
             FPTASData.totalValue = FPTASData.totalValue * ((.05 * maxVal) / 16);
         } else {

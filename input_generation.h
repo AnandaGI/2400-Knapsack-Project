@@ -54,10 +54,16 @@ std::vector<Item> retrieve_arr(std::string filepath, int size){
     return item_arr;
 };
 
-std::vector<Item> generateFPTASInput(double epsilon, const std::vector<Item> items, int size, uint16_t &maxVal){
+std::vector<Item> generateFPTASInput(
+    double epsilon,
+    const std::vector<Item> items,
+    int FPTASVectorSize,
+    int size,
+    uint16_t &maxVal) {
+
     std::vector<Item> FPTASNormalized;
 
-    for (int i = 0; i < size; i++){
+    for (int i = FPTASVectorSize; i < size; i++){    //Don't compare every value again
         if (items[i].value > maxVal)
             maxVal = items[i].value;
     }
