@@ -14,11 +14,12 @@ It additionally contains the algorithm for generating these input array.
 #include <iostream>
 #include <vector>
 #include <random>
+#include <cmath>
 
 
 struct Item{
     uint8_t weight;
-    uint8_t value;
+    uint16_t value; //Max 65535
 
     double ratio() const{
         return static_cast<double>(value) / weight; //ratio needed for greedy algorithm 
@@ -38,7 +39,7 @@ std::vector<Item> retrieve_arr(std::string filepath, int size){
     int i = 0;
     int delimPos;
     uint8_t weight;
-    uint8_t val;
+    uint16_t val;
 
     while (std::getline(dataFile, output) && i < size){
         delimPos = output.find(' ');
@@ -49,19 +50,42 @@ std::vector<Item> retrieve_arr(std::string filepath, int size){
         item_arr.push_back(tempItem);
         i++;
     }
+    dataFile.close();
     return item_arr;
 };
+
+std::vector<Item> generateFPTASInput(double epsilon, const std::vector<Item> items, int size, uint16_t &maxVal){
+    std::vector<Item> FPTASNormalized;
+
+    for (int i = 0; i < size; i++){
+        if (items[i].value > maxVal)
+            maxVal = items[i].value;
+    }
+    double K = (epsilon * maxVal) / size;
+
+    for (int i = 0; i < size; i++){
+        Item tempItem{
+            items[i].weight, 
+            static_cast<uint16_t>(floor(items[i].value / K))
+        };
+        FPTASNormalized.push_back(tempItem);
+        // std::cout << "Before: " << std::to_string(items[i].value);
+        // std::cout << ", After: " << std::to_string(tempItem.value) << std::endl;
+    }
+
+    return FPTASNormalized;
+}
 
 void create_data(std::string output_dir, int size){
     std::vector<Item> structArray(size);
 
     std::mt19937 randomEngine(std::random_device{}());
-    std::uniform_int_distribution<unsigned short> dist(1, 255); // Must be 0-255 for uint8_t, at least 1 for item/value
+    std::uniform_int_distribution<uint16_t> dist(1, 65535); // Must be 1-3200 for uint16_t and considerate of FPTAS
 
     // Populate structArray with random data
     for (size_t i = 0; i < size; ++i) {
         structArray[i].weight = static_cast<uint8_t>(dist(randomEngine));
-        structArray[i].value = static_cast<uint8_t>(dist(randomEngine));
+        structArray[i].value = static_cast<uint16_t>(dist(randomEngine));
     }
 
     // Write structArray to file

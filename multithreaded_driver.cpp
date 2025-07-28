@@ -1,7 +1,7 @@
 /*
 Authors: Ananda Irwin
-Created: 7/26/2025
-Modified: 7/27/2025
+Created: 7/27/2025
+Modified 7/27/2025
 */
 
 #include "greedy_algo.h"
@@ -16,13 +16,14 @@ Modified: 7/27/2025
 #include <iomanip>
 #include <thread>
 #include <future>
+#include <queue>
 
 namespace constants{
     const int MAX_SIZE = 65535; //Max vector size
     const string INPUT_FILE_PATH = "inputFile.txt";   //Filepath for the input textfile
     const int TRIALS = 500; //Number of times to run the algorithm per input size
     const long long MAX_TIME = 5400000000000; //1.5 hours
-    const uint8_t NUM_INPUTS = 15; //Modify to suit needs. Can be 1 (n=4) to 15 (n=65536). Each increases max vector size reached in main loops.
+    const uint8_t NUM_INPUTS = 5; //Modify to suit needs. Can be 1 (n=4) to 15 (n=65536). Each increases max vector size reached in main loops.
     const string CSV_HEADER = ",Brute,Greedy,Dynamic Programming,Memo,FPTAS";
 }
 
@@ -44,7 +45,7 @@ AlgorithmData runAlgorithm(std::vector<Item> items, int weight, int trials, func
 }
 
 int main(){
-    std::vector<Item> items = retrieve_arr(constants::INPUT_FILE_PATH, 256);
+    std::vector<Item> items = retrieve_arr(constants::INPUT_FILE_PATH, constants::MAX_SIZE);
     uint16_t maxVal = 0;
     int weight;
     int currSize = 2;
@@ -55,13 +56,19 @@ int main(){
     AlgorithmData dynamicProgData;
     AlgorithmData memoData;
     AlgorithmData FPTASData;
+    AlgorithmData tempData;
+    std::future<AlgorithmData> greedy;
+    std::future<AlgorithmData> dp;
+    std::future<AlgorithmData> memo;
+    std::future<AlgorithmData> fptas;
+    std::future<AlgorithmData> brute;
     std::vector<Item> tempItems;
     std::vector<Item> fptasInput;
+    std::queue<std::future<AlgorithmData>*> asyncData;
     AlgorithmData* data[5] = {&bruteData, &greedyData, &dynamicProgData, &memoData, &FPTASData};
     std::ofstream runtimeFile("output/runtime.csv");
     std::ofstream basicOpsFile("output/basicOps.csv");
     std::ofstream solutionFile("output/solutions.csv"); //Mostly useful for checking how greedy and FPTAS differ
-    
 
     runtimeFile << constants::CSV_HEADER << "\n";
     basicOpsFile << constants::CSV_HEADER << "\n";
@@ -75,30 +82,36 @@ int main(){
         tempItems = {items.begin(), items.begin() + currSize};
         weight = 125 * currSize;
 
-        if (i < 3){ //Past input size 16, brute force just takes far too long.
-        //BRUTE FORCE
-        bruteData = runAlgorithm(tempItems, weight, constants::TRIALS, &bruteKnapsackWrapper);
-        } else {
-            bruteData = {0, 0, 0};
-        }
+        //Gen FPTAS input beforehand
+        fptasInput = generateFPTASInput(0.05, items, currSize, maxVal);
 
         //GREEDY
-        greedyData = runAlgorithm(tempItems, weight, constants::TRIALS, &greedyKnapsack);
+        greedy = std::async(runAlgorithm, tempItems, weight, constants::TRIALS, &greedyKnapsack);
 
         //DYNAMIC PROGRAMMING
-        dynamicProgData = runAlgorithm(tempItems, weight, constants::TRIALS, &dpWrapper);
+        dp = std::async(runAlgorithm, tempItems, weight, constants::TRIALS, &dpWrapper);
 
         //MEMOIZATION
-        memoData = runAlgorithm(tempItems, weight, constants::TRIALS, &memoWrapper);
+        memo = std::async(runAlgorithm, tempItems, weight, constants::TRIALS, &memoWrapper);
 
         //FPTAS APPROXIMATION
-        if (i < 10){ //Past input size 2048, this algorithm can cause issues due to 16bit int limits
-            fptasInput = generateFPTASInput(0.05, items, currSize, maxVal);
-            FPTASData = runAlgorithm(fptasInput, weight, constants::TRIALS, dpWrapper);
-            FPTASData.totalValue = FPTASData.totalValue * ((.05 * maxVal) / 16);
-        } else {
-            FPTASData = {0, 0, 0};
+        if (i < 10){    //Past input size 2048, this algorithm can cause issues due to 16bit int limits
+            fptas = std::async(runAlgorithm, fptasInput, weight, constants::TRIALS, &dpWrapper);
         }
+
+        //BRUTE FORCE - Run Last
+        if (i < 3){     //Past input size 16, brute force just isn't viable
+            brute = std::async(runAlgorithm, tempItems, weight, constants::TRIALS, &bruteKnapsackWrapper);
+        }
+
+        greedyData = greedy.get();
+        dynamicProgData = dp.get();
+        memoData = memo.get();
+        if(i < 3)
+            bruteData = brute.get();
+        if(i < 10)
+            FPTASData = fptas.get();
+        
 
         //Write to File
         percentDone = ((i+1) * 100)/(constants::NUM_INPUTS);
@@ -108,20 +121,15 @@ int main(){
         basicOpsFile << std::to_string(currSize) << delimiter;
         solutionFile << std::to_string(currSize) << delimiter;
 
-        for(int i = 0; i < 5; i++){
-            if(i == 4)
+        for(int j = 0; j < 5; j++){
+            if(j == 4)
                 delimiter = "\n";
-            runtimeFile << std::to_string(data[i]->duration) << delimiter;
-            basicOpsFile << std::to_string(data[i]->basicOps) << delimiter;
-            solutionFile << std::to_string(data[i]->totalValue) << delimiter;
+            runtimeFile << std::to_string(data[j]->duration) << delimiter;
+            basicOpsFile << std::to_string(data[j]->basicOps) << delimiter;
+            solutionFile << std::to_string(data[j]->totalValue) << delimiter;
             delimiter = ",";
         }
     }
-    
-    //Close Files
-    runtimeFile.close();
-    basicOpsFile.close();
-    solutionFile.close();
 
 
     //Print out total program duration
@@ -129,5 +137,10 @@ int main(){
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
     std::cout << "\n\nTotal Time: " << std::to_string(duration.count()) << std::endl;
 
-    return 0;
+    //Close Files
+    runtimeFile.close();
+    basicOpsFile.close();
+    solutionFile.close();
+
+
 }
