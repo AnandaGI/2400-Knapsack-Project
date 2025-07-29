@@ -1,7 +1,7 @@
 /*
 Authors: Ananda Irwin, Adam Light
 Created: 7/25/2025
-Modified 7/25/2025
+Modified 7/28/2025
 This file contains the dynbamic programming memoization solution algorithm for the knapsack program.
 */
 
@@ -17,9 +17,7 @@ int memoKnapsack(
     int W,  //Weight aka Capacity
     int n, 
     std::vector<std::vector<int>> &memo,
-    int &basicOps) {
-
-    int basic_operations = 0;
+    uint32_t &basicOps) {
 
     // Base Case
     if (n == 0 || W == 0)
@@ -41,11 +39,11 @@ int memoKnapsack(
 
 AlgorithmData memoWrapper(std::vector<Item> items, int capacity) {
     int n = items.size();
-    int basicOps = 0;
+    uint32_t basicOps = 0;
     std::vector<std::vector<int>> memo(n + 1, std::vector<int>(capacity + 1, -1)); // Memoization table to store the results
     
     auto startTimeMemo = std::chrono::high_resolution_clock::now();
-    int totalValue = memoKnapsack(items, capacity, n, memo, basicOps);
+    uint32_t totalValue = memoKnapsack(items, capacity, n, memo, basicOps);
     auto endTimeMemo = std::chrono::high_resolution_clock::now();
     auto durationMemo = std::chrono::duration_cast<std::chrono::microseconds>(endTimeMemo - startTimeMemo);
 

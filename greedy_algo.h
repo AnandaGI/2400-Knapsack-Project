@@ -1,7 +1,7 @@
 /*
 Authors: Ananda Irwin, Adam Light
 Created: 7/25/2025
-Modified 7/25/2025
+Modified 7/28/2025
 This file contains the brute force solution algorithm for the knapsack program.
 Algorithm written by Adam Light, lightly edited by Ananda Irwin
 */
@@ -21,10 +21,10 @@ bool compareItems(const Item a, const Item b) {
 AlgorithmData greedyKnapsack(std::vector<Item> items, int knapsackCapacity){
     auto start_time_greedy = std::chrono::high_resolution_clock::now();
     int totalWeight = 0;
-    int totalValue = 0;
+    uint32_t totalValue = 0;
     int count = 0;
     int n = items.size();
-    int basic_ops = 0;
+    uint32_t basic_ops = 0;
 
     std::sort(items.begin(), items.end(), compareItems);
 

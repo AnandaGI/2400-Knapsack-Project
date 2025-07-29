@@ -1,7 +1,7 @@
 /*
 Authors: Ananda Irwin, Adam Light
 Created: 7/22/2025
-Modified 7/23/2025
+Modified 7/28/2025
 This file contains the Item structure that will be stored in the input arrays.
 It additionally contains the algorithm for generating these input array.
 */
@@ -27,9 +27,9 @@ struct Item{
 };
 
 struct AlgorithmData{
-    int totalValue;
+    uint32_t totalValue;
     long long duration;
-    int basicOps;
+    uint32_t basicOps;
 };
 
 std::vector<Item> retrieve_arr(std::string filepath, int size){
