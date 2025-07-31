@@ -1,7 +1,7 @@
 /*
 Authors: Brent Maxwell, Ananda Irwin
 Created: 7/25/2025
-Modified 7/25/2025
+Modified 7/28/2025
 This file contains the dynbamic programming solution algorithm for the knapsack program.
 */
 
@@ -13,7 +13,7 @@ using namespace std;
 #ifndef DP_ALGO_H
 #define DP_ALGO_H
 
-int dpKnapsack(vector<Item> &it, int W, int &basicOps) {
+int dpKnapsack(vector<Item> &it, int W, uint32_t &basicOps) {
     int n = it.size();
     vector<vector<int>> dp(n + 1, vector<int>(W + 1));
 
@@ -35,10 +35,10 @@ int dpKnapsack(vector<Item> &it, int W, int &basicOps) {
 }
 
 AlgorithmData dpWrapper(vector<Item> items, int capacity){
-    int basicOps = 0;
+    uint32_t basicOps = 0;
 
     auto startTimeBrute = std::chrono::high_resolution_clock::now();
-    int totalValue = dpKnapsack(items, capacity, basicOps);
+    uint32_t totalValue = dpKnapsack(items, capacity, basicOps);
     auto endTimeBrute = std::chrono::high_resolution_clock::now();
     auto durationBrute = std::chrono::duration_cast<std::chrono::microseconds>(endTimeBrute - startTimeBrute);
 

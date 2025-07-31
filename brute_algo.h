@@ -1,7 +1,7 @@
 /*
 Authors: Ananda Irwin, Adam Light
 Created: 7/25/2025
-Modified 7/25/2025
+Modified 7/28/2025
 This file contains the brute force solution algorithm for the knapsack program.
 Algorithm written by Adam Light, wrapper written by Ananda Irwin
 */
@@ -14,7 +14,7 @@ Algorithm written by Adam Light, wrapper written by Ananda Irwin
 #include <chrono>
 
 
-int knapsackBruteForce(const std::vector<Item>& items, int index, int maxIndex, int remainingWeight, int &basicOps) {
+int knapsackBruteForce(const std::vector<Item>& items, int index, int maxIndex, int remainingWeight, uint32_t &basicOps) {
 
 	if (index == maxIndex || remainingWeight == 0) {
 		return 0;
@@ -38,10 +38,10 @@ int knapsackBruteForce(const std::vector<Item>& items, int index, int maxIndex, 
 }
 
 AlgorithmData bruteKnapsackWrapper(const std::vector<Item>& items, int capacity){
-    int basicOps = 0;
+    uint32_t basicOps = 0;
 
     auto startTimeBrute = std::chrono::high_resolution_clock::now();
-    int totalValue = knapsackBruteForce(items, 0, items.size(), capacity, basicOps);
+    uint32_t totalValue = knapsackBruteForce(items, 0, items.size(), capacity, basicOps);
     auto endTimeBrute = std::chrono::high_resolution_clock::now();
     auto durationBrute = std::chrono::duration_cast<std::chrono::microseconds>(endTimeBrute - startTimeBrute);
 
