@@ -1,10 +1,10 @@
-#How to Run
+# How to Run
 Project can be run by activating the executable or running it in windows commandline.
 
 Use the multithreaded executable for supported CPUs to decrease runtime. Otherwise, the
 default executable with run the experiment linearly.
 
-#How the experiment/code works.
+# How the experiment/code works.
 The experiment consists of running each algorithm 500 times and averaging the result for a given input range.
 For example, 5 total runs of the algorithms will make each algorithm run with an input size of 4, 8, 16, 32,
 and 64, 500 times each, then average the resulting runtime and output the basic operations performed and the
